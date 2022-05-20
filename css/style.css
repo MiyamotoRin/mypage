@@ -1,9 +1,30 @@
+body {
+  background-color: forestgreen;
+}
+
 .container {
   margin: 0 auto;
   width: 1000px;
   text-align: center;
 }
 
+.main-box {
+  display: flex;
+}
+
+.box-left {
+  width: 30%
+}
+
+.oreno-nav {
+  text-align: left;
+}
+
+.box-right {
+  width: 70%
+}
+
 .I {
-  width: 30%;
+  width: 50%;
+  text-align: right;
 }
