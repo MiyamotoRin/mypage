@@ -2,6 +2,14 @@ body {
   background-color: forestgreen;
 }
 
+h1 {
+  font-family: 'Poppins', sans-serif;
+}
+
+p {
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
 .container {
   margin: 0 auto;
   width: 80%;
