@@ -35,6 +35,10 @@ p {
   clear: both;
 }
 
+.work-item {
+  list-style: none;
+}
+
 @media(max-width: 670px) {
   .container {
     width: 90%;
