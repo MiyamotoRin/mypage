@@ -1,0 +1,71 @@
+body {
+    background-color: forestgreen;
+  }
+  
+  h1, h2 {
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  p {
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+  
+  .container {
+    margin: 0 auto;
+    width: 80%;
+    text-align: center;
+  }
+  
+  .head-nav li {
+    float: left;
+    padding: 0 10px;
+    list-style: none;
+  }
+  
+  .nav-link {
+    color: black;
+    text-decoration: none;
+  }
+  
+  .nav-link:hover {
+    opacity: 0.7;
+  }
+  
+  .clear {
+    clear: both;
+  }
+  
+  .detail-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .detail-text {
+    width: 60%;
+    text-align: left;
+  }
+  
+  .detail-image {
+    width: 35%;
+    text-align: right;
+  }
+  
+  .detail-image img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  @media(max-width: 670px) {
+    .container {
+      width: 90%;
+    }
+    .detail-container {
+      flex-direction: column-reverse;
+    }
+    .detail-text, .detail-image {
+      width: 100%;
+      text-align: center;
+    }
+  }
