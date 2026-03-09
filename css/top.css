@@ -50,6 +50,16 @@ p {
   text-align: right;
 }
 
+/* Footer */
+footer {
+  margin-top: 40px;
+  padding: 20px 0;
+}
+
+.footer-links {
+  text-align: center;
+}
+
 @media(max-width: 670px) {
   .container {
     width: 90%;
