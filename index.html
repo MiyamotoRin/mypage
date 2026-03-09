@@ -24,12 +24,82 @@
           </div>
         </div>
         <div class="box-right">
-          <img class="I" src="images/portfolio.jpg">
+          <button class="explodable-photo" type="button" aria-label="Click to explode the portrait">
+            <img class="I" src="images/portfolio.jpg" alt="Portrait of Miyamoto Rin">
+          </button>
         </div>
       </div>
     </div>
   </div>
+  <div class="explosion-overlay" aria-hidden="true"></div>
   <div id="site-footer"></div>
   <script src="js/common-components.js"></script>
+  <script>
+    (() => {
+      const photo = document.querySelector(".explodable-photo");
+      const overlay = document.querySelector(".explosion-overlay");
+      if (!photo || !overlay) {
+        return;
+      }
+
+      const createShard = (img, bounds, row, col, rows, cols) => {
+        const shard = document.createElement("span");
+        const pieceWidth = bounds.width / cols;
+        const pieceHeight = bounds.height / rows;
+        const originX = (col + 0.5) / cols - 0.5;
+        const originY = (row + 0.5) / rows - 0.5;
+        const translateX = originX * (bounds.width * 1.7) + (Math.random() - 0.5) * 40;
+        const translateY = originY * (bounds.height * 1.9) + (Math.random() - 0.5) * 60;
+        const rotate = (Math.random() - 0.5) * 220;
+        const duration = 700 + Math.random() * 500;
+        const delay = Math.random() * 120;
+
+        shard.className = "photo-shard";
+        shard.style.width = pieceWidth + "px";
+        shard.style.height = pieceHeight + "px";
+        shard.style.left = bounds.left + col * pieceWidth + "px";
+        shard.style.top = bounds.top + row * pieceHeight + "px";
+        shard.style.backgroundImage = 'url("' + img.currentSrc + '")';
+        shard.style.backgroundSize = bounds.width + "px " + bounds.height + "px";
+        shard.style.backgroundPosition = -col * pieceWidth + "px " + -row * pieceHeight + "px";
+        shard.style.setProperty("--shard-x", translateX + "px");
+        shard.style.setProperty("--shard-y", translateY + "px");
+        shard.style.setProperty("--shard-rotate", rotate + "deg");
+        shard.style.animationDuration = duration + "ms";
+        shard.style.animationDelay = delay + "ms";
+        shard.style.clipPath = "polygon(50% 0%, 100% 40%, 80% 100%, 15% 85%, 0% 30%)";
+
+        return { shard, lifetime: duration + delay };
+      };
+
+      photo.addEventListener("click", () => {
+        if (photo.dataset.exploded === "true") {
+          return;
+        }
+
+        const img = photo.querySelector("img");
+        const bounds = img.getBoundingClientRect();
+        const rows = 5;
+        const cols = 6;
+        let maxLifetime = 0;
+
+        photo.dataset.exploded = "true";
+        photo.classList.add("is-exploding");
+
+        for (let row = 0; row < rows; row += 1) {
+          for (let col = 0; col < cols; col += 1) {
+            const { shard, lifetime } = createShard(img, bounds, row, col, rows, cols);
+            maxLifetime = Math.max(maxLifetime, lifetime);
+            overlay.appendChild(shard);
+          }
+        }
+
+        window.setTimeout(() => {
+          photo.classList.add("is-gone");
+          overlay.replaceChildren();
+        }, maxLifetime + 80);
+      });
+    })();
+  </script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 body {
   background-color: forestgreen;
+  overflow-x: clip;
 }
 
 h1 {
@@ -45,9 +46,66 @@ p {
   width: 70%;
 }
 
-.I {
+.explodable-photo {
+  position: relative;
+  display: inline-block;
   width: 50%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: crosshair;
+  vertical-align: top;
+  isolation: isolate;
+}
+
+.I {
+  display: block;
+  width: 100%;
   text-align: right;
+  transition: opacity 0.18s ease;
+}
+
+.explodable-photo.is-exploding .I {
+  opacity: 0;
+}
+
+.explodable-photo.is-gone {
+  visibility: hidden;
+}
+
+.explosion-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  overflow: visible;
+}
+
+.photo-shard {
+  position: fixed;
+  inset: auto;
+  display: block;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  transform-origin: center;
+  animation-name: explode-photo-shard;
+  animation-timing-function: cubic-bezier(0.18, 0.7, 0.22, 1);
+  animation-fill-mode: forwards;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+@keyframes explode-photo-shard {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    filter: saturate(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--shard-x), var(--shard-y), 0) rotate(var(--shard-rotate)) scale(0.35);
+    filter: saturate(1.4) brightness(1.1);
+  }
 }
 
 /* Footer */
@@ -96,5 +154,9 @@ footer {
 
   .box-right {
     width: 100%;
+  }
+
+  .explodable-photo {
+    width: 65%;
   }
 }
