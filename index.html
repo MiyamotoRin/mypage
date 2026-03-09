@@ -42,6 +42,58 @@
         return;
       }
 
+      const createFlash = (bounds) => {
+        const flash = document.createElement("span");
+        const size = Math.max(bounds.width, bounds.height) * 1.15;
+
+        flash.className = "explosion-flash";
+        flash.style.width = size + "px";
+        flash.style.height = size + "px";
+        flash.style.left = bounds.left + bounds.width / 2 - size / 2 + "px";
+        flash.style.top = bounds.top + bounds.height / 2 - size / 2 + "px";
+
+        return { node: flash, lifetime: 280 };
+      };
+
+      const createShockwave = (bounds) => {
+        const ring = document.createElement("span");
+        const size = Math.max(bounds.width, bounds.height) * 0.55;
+
+        ring.className = "explosion-ring";
+        ring.style.width = size + "px";
+        ring.style.height = size + "px";
+        ring.style.left = bounds.left + bounds.width / 2 - size / 2 + "px";
+        ring.style.top = bounds.top + bounds.height / 2 - size / 2 + "px";
+
+        return { node: ring, lifetime: 720 };
+      };
+
+      const createSpark = (bounds) => {
+        const spark = document.createElement("span");
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.max(bounds.width, bounds.height) * (1.1 + Math.random() * 1.8);
+        const translateX = Math.cos(angle) * distance;
+        const translateY = Math.sin(angle) * distance;
+        const rotation = angle * (180 / Math.PI);
+        const length = 18 + Math.random() * 36;
+        const duration = 420 + Math.random() * 360;
+        const delay = Math.random() * 90;
+        const centerX = bounds.left + bounds.width / 2;
+        const centerY = bounds.top + bounds.height / 2;
+
+        spark.className = "explosion-spark";
+        spark.style.width = length + "px";
+        spark.style.left = centerX + "px";
+        spark.style.top = centerY + "px";
+        spark.style.setProperty("--spark-x", translateX + "px");
+        spark.style.setProperty("--spark-y", translateY + "px");
+        spark.style.setProperty("--spark-rotate", rotation + "deg");
+        spark.style.animationDuration = duration + "ms";
+        spark.style.animationDelay = delay + "ms";
+
+        return { node: spark, lifetime: duration + delay };
+      };
+
       const createShard = (img, bounds, row, col, rows, cols) => {
         const shard = document.createElement("span");
         const pieceWidth = bounds.width / cols;
@@ -85,6 +137,19 @@
 
         photo.dataset.exploded = "true";
         photo.classList.add("is-exploding");
+
+        const flash = createFlash(bounds);
+        const shockwave = createShockwave(bounds);
+
+        maxLifetime = Math.max(maxLifetime, flash.lifetime, shockwave.lifetime);
+        overlay.appendChild(flash.node);
+        overlay.appendChild(shockwave.node);
+
+        for (let index = 0; index < 24; index += 1) {
+          const spark = createSpark(bounds);
+          maxLifetime = Math.max(maxLifetime, spark.lifetime);
+          overlay.appendChild(spark.node);
+        }
 
         for (let row = 0; row < rows; row += 1) {
           for (let col = 0; col < cols; col += 1) {
