@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>著者年表 — Miyamoto Rin</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300&family=Poppins&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/page.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300&family=Poppins&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/view/styles/page.css">
   <style>
     :root {
       --bg: forestgreen;
@@ -151,7 +153,9 @@
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     /* ── Timeline ── */
@@ -370,7 +374,8 @@
     }
   </style>
 </head>
-<body data-base-path="">
+
+<body>
   <div id="site-header"></div>
 
   <div class="container">
@@ -417,7 +422,7 @@
   </div>
 
   <div id="site-footer"></div>
-  <script src="js/common-components.js"></script>
+  <script src="/controller/components/common-components.js"></script>
   <script>
     const CAT_COLORS = [
       '#5B8EBF', '#C9A84C', '#7BAE7F', '#BF7B5B', '#9B7BBF',
@@ -446,10 +451,10 @@
     function parsePages(pages, pName, pBirth, pDeath, pCat) {
       return pages.map(page => {
         const props = page.properties;
-        const name  = extractText(props[pName]) || '(不明)';
+        const name = extractText(props[pName]) || '(不明)';
         const birth = extractNumber(props[pBirth]);
         const death = extractNumber(props[pDeath]);
-        const cat   = pCat ? extractText(props[pCat]) : '';
+        const cat = pCat ? extractText(props[pCat]) : '';
         return { name, birth, death, cat, url: page.url, id: page.id };
       }).filter(a => a.birth !== null || a.death !== null);
     }
@@ -501,10 +506,10 @@
     }
 
     function getFiltered() {
-      const q     = document.getElementById('search-input').value.toLowerCase();
+      const q = document.getElementById('search-input').value.toLowerCase();
       const yFrom = parseInt(document.getElementById('year-from').value) || null;
-      const yTo   = parseInt(document.getElementById('year-to').value) || null;
-      const sort  = document.getElementById('sort-select').value;
+      const yTo = parseInt(document.getElementById('year-to').value) || null;
+      const sort = document.getElementById('sort-select').value;
 
       let list = authors.filter(a => {
         if (q && !a.name.toLowerCase().includes(q)) return false;
@@ -516,7 +521,7 @@
       list.sort((a, b) => {
         if (sort === 'birth') return (a.birth ?? 9999) - (b.birth ?? 9999);
         if (sort === 'death') return (a.death ?? 9999) - (b.death ?? 9999);
-        if (sort === 'name')  return a.name.localeCompare(b.name, 'ja');
+        if (sort === 'name') return a.name.localeCompare(b.name, 'ja');
         if (sort === 'span') {
           const sa = (a.death ?? a.birth ?? 0) - (a.birth ?? a.death ?? 0);
           const sb = (b.death ?? b.birth ?? 0) - (b.birth ?? b.death ?? 0);
@@ -547,9 +552,9 @@
       maxY = Math.ceil(maxY / 100) * 100 + 50;
 
       const yFrom = parseInt(document.getElementById('year-from').value);
-      const yTo   = parseInt(document.getElementById('year-to').value);
+      const yTo = parseInt(document.getElementById('year-to').value);
       if (!isNaN(yFrom)) minY = yFrom;
-      if (!isNaN(yTo))   maxY = yTo;
+      if (!isNaN(yTo)) maxY = yTo;
 
       function pct(y) { return ((y - minY) / (maxY - minY)) * 100; }
 
@@ -608,7 +613,7 @@
         if (author.birth !== null && author.death !== null) {
           const bar = document.createElement('div');
           bar.className = 'author-bar';
-          bar.style.left  = pct(author.birth) + '%';
+          bar.style.left = pct(author.birth) + '%';
           bar.style.width = Math.max(pct(author.death) - pct(author.birth), 0.3) + '%';
           bar.style.background = `linear-gradient(90deg, ${color}88, ${color})`;
           bar.style.border = `1px solid ${color}`;
@@ -631,7 +636,7 @@
         row.appendChild(barContainer);
 
         row.addEventListener('mouseenter', (e) => showTooltip(e, author));
-        row.addEventListener('mousemove',  (e) => moveTooltip(e));
+        row.addEventListener('mousemove', (e) => moveTooltip(e));
         row.addEventListener('mouseleave', hideTooltip);
         row.addEventListener('click', () => { if (author.url) window.open(author.url, '_blank'); });
         row.addEventListener('touchstart', (e) => {
@@ -690,7 +695,7 @@
       const tw = tt.offsetWidth, th = tt.offsetHeight;
       const vw = window.innerWidth, vh = window.innerHeight;
       tt.style.left = (e.clientX + tw + 16 > vw ? e.clientX - tw - 8 : e.clientX + 16) + 'px';
-      tt.style.top  = (e.clientY + th + 16 > vh ? e.clientY - th - 8 : e.clientY + 16) + 'px';
+      tt.style.top = (e.clientY + th + 16 > vh ? e.clientY - th - 8 : e.clientY + 16) + 'px';
     }
 
     function hideTooltip() {
@@ -701,10 +706,10 @@
       showStatus('<span class="spinner"></span> Notionからデータを取得中...');
       try {
         const cfg = await fetch('/api/config').then(r => r.json());
-        propName  = cfg.propName;
+        propName = cfg.propName;
         propBirth = cfg.propBirth;
         propDeath = cfg.propDeath;
-        propCat   = cfg.propCategory;
+        propCat = cfg.propCategory;
 
         const pages = await fetchAllPages();
         authors = parsePages(pages, propName, propBirth, propDeath, propCat);
@@ -729,4 +734,5 @@
     document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
+
 </html>

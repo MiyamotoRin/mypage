@@ -3,5 +3,15 @@
   "framework": null,
   "buildCommand": null,
   "outputDirectory": ".",
-  "installCommand": null
+  "installCommand": null,
+  "functions": { "model/**/*.js": {} },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/model/$1" },
+    { "source": "/", "destination": "/view/pages/top/index.html" },
+    { "source": "/profile", "destination": "/view/pages/profile/index.html" },
+    { "source": "/works", "destination": "/view/pages/works/index.html" },
+    { "source": "/works/(.*)", "destination": "/view/pages/works/$1" },
+    { "source": "/timeline", "destination": "/view/pages/timeline/index.html" },
+    { "source": "/read-books", "destination": "/view/pages/read-books/index.html" }
+  ]
 }

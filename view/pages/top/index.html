@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300&family=Poppins&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/top.css">
+  <link rel="stylesheet" href="/view/styles/top.css">
   <title>Miyamoto Rin</title>
 </head>
-<body data-base-path="">
+<body>
   <div class="top-wrapper">
     <div class="container">
       <div class="heading">
@@ -17,16 +17,16 @@
         <div class="box-left">
           <div class="oreno-nav">
             <ul>
-              <li><a href="index.html" class="nav-link">Top</a></li>
-              <li><a href="profile.html" class="nav-link">Profile</a></li>
-              <li><a href="works.html" class="nav-link">Works</a></li>
-              <li><a href="author-timeline.html" class="nav-link">Timeline</a></li>
+              <li><a href="/" class="nav-link">Top</a></li>
+              <li><a href="/profile" class="nav-link">Profile</a></li>
+              <li><a href="/works" class="nav-link">Works</a></li>
+              <li><a href="/timeline" class="nav-link">Timeline</a></li>
             </ul>
           </div>
         </div>
         <div class="box-right">
           <button class="explodable-photo" type="button" aria-label="Click to explode the portrait">
-            <img class="I" src="images/portfolio.jpg" alt="Portrait of Miyamoto Rin">
+            <img class="I" src="/view/images/portfolio.jpg" alt="Portrait of Miyamoto Rin">
           </button>
         </div>
       </div>
@@ -34,7 +34,7 @@
   </div>
   <div class="explosion-overlay" aria-hidden="true"></div>
   <div id="site-footer"></div>
-  <script src="js/common-components.js"></script>
+  <script src="/controller/components/common-components.js"></script>
   <script>
     (() => {
       const photo = document.querySelector(".explodable-photo");

@@ -14,7 +14,17 @@ if (!NOTION_API_KEY || !NOTION_DATABASE_ID) {
 
 const app = express();
 app.use(express.json());
-app.use(express.static(path.join(__dirname)));
+
+const root = __dirname;
+
+app.get('/',           (_req, res) => res.sendFile(path.join(root, 'view/pages/top/index.html')));
+app.get('/profile',    (_req, res) => res.sendFile(path.join(root, 'view/pages/profile/index.html')));
+app.get('/works',      (_req, res) => res.sendFile(path.join(root, 'view/pages/works/index.html')));
+app.get('/works/:page', (req, res) => res.sendFile(path.join(root, 'view/pages/works', req.params.page)));
+app.get('/timeline',   (_req, res) => res.sendFile(path.join(root, 'view/pages/timeline/index.html')));
+app.get('/read-books', (_req, res) => res.sendFile(path.join(root, 'view/pages/read-books/index.html')));
+
+app.use(express.static(root));
 
 app.get('/api/config', (_req, res) => {
   res.json({
