@@ -17,6 +17,7 @@ function renderSharedHeader() {
             <li><a href="${basePath}index.html" class="nav-link">Top</a></li>
             <li><a href="${basePath}profile.html" class="nav-link">Profile</a></li>
             <li><a href="${basePath}works.html" class="nav-link">Works</a></li>
+            <li><a href="${basePath}author-timeline.html" class="nav-link">Timeline</a></li>
           </ul>
         </div>
       </div>

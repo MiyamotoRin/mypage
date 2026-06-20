@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>著者年表 — Miyamoto Rin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300&family=Poppins&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/page.css">
+  <style>
+    :root {
+      --bg: forestgreen;
+      --surface: rgba(0, 70, 0, 0.55);
+      --surface2: rgba(0, 50, 0, 0.7);
+      --text: #ffffff;
+      --text-dim: rgba(255, 255, 255, 0.55);
+      --gold: #C9A84C;
+      --gold-dim: rgba(201, 168, 76, 0.4);
+      --accent: #90EE90;
+      --accent-dim: rgba(144, 238, 144, 0.3);
+      --sans: 'Poppins', 'Noto Sans JP', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Page header ── */
+    .tl-header {
+      padding: 2rem 1.5rem 1.2rem;
+      border-bottom: 1px solid var(--gold-dim);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .tl-title {
+      font-family: var(--sans);
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: 0.05em;
+    }
+
+    .tl-title span {
+      color: var(--gold);
+    }
+
+    .count-badge {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+    }
+
+    /* ── Controls ── */
+    #controls {
+      display: none;
+      padding: 0.9rem 1.5rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--surface2);
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      align-items: center;
+    }
+
+    #controls.visible {
+      display: flex;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .control-group label {
+      white-space: nowrap;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    .control-group input,
+    .control-group select {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--gold-dim);
+      color: var(--text);
+      padding: 0.35rem 0.6rem;
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .control-group input:focus,
+    .control-group select:focus {
+      border-color: var(--gold);
+    }
+
+    .control-group input::placeholder {
+      color: var(--text-dim);
+    }
+
+    .control-group select option {
+      background: #1a4a1a;
+      color: var(--text);
+    }
+
+    #search-input {
+      width: 160px;
+    }
+
+    /* ── Status ── */
+    #status {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      display: none;
+    }
+
+    #status.visible {
+      display: block;
+    }
+
+    .error-msg {
+      color: #ffaaaa;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--gold-dim);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 0.5rem;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── Timeline ── */
+    #timeline-container {
+      display: none;
+      padding: 1.5rem 1.5rem 4rem;
+      overflow-x: auto;
+    }
+
+    #timeline-container.visible {
+      display: block;
+    }
+
+    .timeline-wrapper {
+      position: relative;
+      min-width: 600px;
+    }
+
+    /* Century labels */
+    .century-labels {
+      display: flex;
+      position: relative;
+      margin-bottom: 0.5rem;
+      margin-left: 180px;
+      height: 16px;
+    }
+
+    .century-label {
+      position: absolute;
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+
+    /* Axis */
+    .time-axis {
+      position: relative;
+      height: 2px;
+      background: linear-gradient(to right, transparent, var(--gold-dim) 5%, var(--gold-dim) 95%, transparent);
+      margin-left: 180px;
+      margin-bottom: 0.3rem;
+    }
+
+    .axis-tick {
+      position: absolute;
+      top: 0;
+      width: 1px;
+      height: 8px;
+      background: var(--gold-dim);
+      transform: translateX(-50%);
+    }
+
+    .axis-tick.major {
+      height: 14px;
+      background: var(--gold);
+      top: -6px;
+    }
+
+    /* Author rows */
+    .author-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-top: 0.8rem;
+    }
+
+    .author-row {
+      display: flex;
+      align-items: center;
+      height: 28px;
+      cursor: pointer;
+      border-radius: 1px;
+      transition: background 0.15s;
+    }
+
+    .author-row:hover {
+      background: var(--accent-dim);
+    }
+
+    .author-row:hover .author-bar {
+      filter: brightness(1.3);
+    }
+
+    .author-row:hover .author-name {
+      color: var(--text);
+    }
+
+    .author-name {
+      width: 175px;
+      min-width: 175px;
+      padding-right: 10px;
+      text-align: right;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color 0.2s;
+      line-height: 1;
+    }
+
+    .author-bar-container {
+      flex: 1;
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .author-bar {
+      position: absolute;
+      height: 10px;
+      border-radius: 1px;
+      transition: filter 0.15s;
+    }
+
+    .era-dot {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      top: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    /* ── Tooltip ── */
+    #tooltip {
+      position: fixed;
+      display: none;
+      background: var(--surface2);
+      border: 1px solid var(--gold-dim);
+      padding: 0.9rem 1.1rem;
+      border-radius: 2px;
+      z-index: 1000;
+      min-width: 200px;
+      max-width: 280px;
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+    }
+
+    #tooltip.visible {
+      display: block;
+    }
+
+    .tooltip-name {
+      font-size: 0.95rem;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+      font-weight: 400;
+    }
+
+    .tooltip-years {
+      font-size: 0.7rem;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .tooltip-meta {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    .tooltip-meta strong {
+      color: var(--text);
+    }
+
+    /* ── Legend ── */
+    #legend {
+      display: none;
+      padding: 0.8rem 1.5rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+      border-top: 1px solid var(--gold-dim);
+    }
+
+    #legend.visible {
+      display: flex;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.65rem;
+      color: var(--text-dim);
+    }
+
+    .legend-color {
+      width: 20px;
+      height: 6px;
+      border-radius: 1px;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 640px) {
+      .author-name {
+        width: 100px;
+        min-width: 100px;
+        font-size: 0.65rem;
+      }
+
+      .century-labels,
+      .time-axis {
+        margin-left: 105px;
+      }
+
+      #search-input {
+        width: 120px;
+      }
+    }
+  </style>
+</head>
+<body data-base-path="">
+  <div id="site-header"></div>
+
+  <div class="container">
+    <div class="tl-header">
+      <h1 class="tl-title">著者<span>年表</span></h1>
+      <span class="count-badge" id="author-count"></span>
+    </div>
+
+    <div id="controls">
+      <div class="control-group">
+        <label>検索</label>
+        <input type="text" id="search-input" placeholder="著者名...">
+      </div>
+      <div class="control-group">
+        <label>表示範囲</label>
+        <input type="number" id="year-from" placeholder="開始年" style="width:80px">
+        <span style="color:var(--text-dim);font-size:0.75rem">—</span>
+        <input type="number" id="year-to" placeholder="終了年" style="width:80px">
+      </div>
+      <div class="control-group">
+        <label>並び替え</label>
+        <select id="sort-select">
+          <option value="birth">生年順</option>
+          <option value="death">没年順</option>
+          <option value="name">名前順</option>
+          <option value="span">活動期間順</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="status"></div>
+
+    <div id="timeline-container">
+      <div class="timeline-wrapper" id="timeline-wrapper"></div>
+    </div>
+
+    <div id="legend"></div>
+  </div>
+
+  <div id="tooltip">
+    <div class="tooltip-name" id="tt-name"></div>
+    <div class="tooltip-years" id="tt-years"></div>
+    <div class="tooltip-meta" id="tt-meta"></div>
+  </div>
+
+  <div id="site-footer"></div>
+  <script src="js/common-components.js"></script>
+  <script>
+    const CAT_COLORS = [
+      '#5B8EBF', '#C9A84C', '#7BAE7F', '#BF7B5B', '#9B7BBF',
+      '#BF5B8E', '#7BBFBE', '#BFA87B', '#5B7BBF', '#BF5B5B',
+    ];
+    const UNKNOWN_COLOR = 'rgba(255,255,255,0.25)';
+
+    let authors = [];
+    let catColorMap = {};
+    let propName = '名前', propBirth = '生年', propDeath = '没年', propCat = '';
+
+    function extractText(prop) {
+      if (!prop) return '';
+      if (prop.type === 'title') return prop.title.map(t => t.plain_text).join('');
+      if (prop.type === 'rich_text') return prop.rich_text.map(t => t.plain_text).join('');
+      if (prop.type === 'select') return prop.select?.name || '';
+      if (prop.type === 'multi_select') return prop.multi_select.map(s => s.name).join(', ');
+      return '';
+    }
+
+    function extractNumber(prop) {
+      if (!prop || prop.type !== 'number') return null;
+      return prop.number;
+    }
+
+    function parsePages(pages, pName, pBirth, pDeath, pCat) {
+      return pages.map(page => {
+        const props = page.properties;
+        const name  = extractText(props[pName]) || '(不明)';
+        const birth = extractNumber(props[pBirth]);
+        const death = extractNumber(props[pDeath]);
+        const cat   = pCat ? extractText(props[pCat]) : '';
+        return { name, birth, death, cat, url: page.url, id: page.id };
+      }).filter(a => a.birth !== null || a.death !== null);
+    }
+
+    async function fetchAllPages() {
+      let results = [], cursor = undefined;
+      while (true) {
+        const body = { page_size: 100 };
+        if (cursor) body.start_cursor = cursor;
+        const res = await fetch('/api/notion/query', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.message || `HTTP ${res.status}`);
+        }
+        const data = await res.json();
+        results = results.concat(data.results);
+        if (!data.has_more) break;
+        cursor = data.next_cursor;
+      }
+      return results;
+    }
+
+    function buildCatColors() {
+      const cats = [...new Set(authors.map(a => a.cat).filter(Boolean))];
+      cats.forEach((c, i) => { catColorMap[c] = CAT_COLORS[i % CAT_COLORS.length]; });
+    }
+
+    function showStatus(html) {
+      const s = document.getElementById('status');
+      s.innerHTML = html;
+      s.classList.add('visible');
+    }
+
+    function hideStatus() {
+      const s = document.getElementById('status');
+      s.innerHTML = '';
+      s.classList.remove('visible');
+    }
+
+    function setupControls() {
+      document.getElementById('search-input').addEventListener('input', render);
+      document.getElementById('year-from').addEventListener('input', render);
+      document.getElementById('year-to').addEventListener('input', render);
+      document.getElementById('sort-select').addEventListener('change', render);
+    }
+
+    function getFiltered() {
+      const q     = document.getElementById('search-input').value.toLowerCase();
+      const yFrom = parseInt(document.getElementById('year-from').value) || null;
+      const yTo   = parseInt(document.getElementById('year-to').value) || null;
+      const sort  = document.getElementById('sort-select').value;
+
+      let list = authors.filter(a => {
+        if (q && !a.name.toLowerCase().includes(q)) return false;
+        if (yFrom && a.death !== null && a.death < yFrom) return false;
+        if (yTo && a.birth !== null && a.birth > yTo) return false;
+        return true;
+      });
+
+      list.sort((a, b) => {
+        if (sort === 'birth') return (a.birth ?? 9999) - (b.birth ?? 9999);
+        if (sort === 'death') return (a.death ?? 9999) - (b.death ?? 9999);
+        if (sort === 'name')  return a.name.localeCompare(b.name, 'ja');
+        if (sort === 'span') {
+          const sa = (a.death ?? a.birth ?? 0) - (a.birth ?? a.death ?? 0);
+          const sb = (b.death ?? b.birth ?? 0) - (b.birth ?? b.death ?? 0);
+          return sb - sa;
+        }
+        return 0;
+      });
+
+      return list;
+    }
+
+    function render() {
+      const list = getFiltered();
+      document.getElementById('author-count').textContent = `${list.length} / ${authors.length} 著者`;
+
+      const wrapper = document.getElementById('timeline-wrapper');
+      wrapper.innerHTML = '';
+
+      if (list.length === 0) {
+        wrapper.innerHTML = '<p style="color:var(--text-dim);font-size:0.8rem;padding:2rem 0">該当する著者が見つかりません</p>';
+        return;
+      }
+
+      const allYears = list.flatMap(a => [a.birth, a.death].filter(y => y !== null));
+      let minY = Math.min(...allYears);
+      let maxY = Math.max(...allYears);
+      minY = Math.floor(minY / 100) * 100 - 50;
+      maxY = Math.ceil(maxY / 100) * 100 + 50;
+
+      const yFrom = parseInt(document.getElementById('year-from').value);
+      const yTo   = parseInt(document.getElementById('year-to').value);
+      if (!isNaN(yFrom)) minY = yFrom;
+      if (!isNaN(yTo))   maxY = yTo;
+
+      function pct(y) { return ((y - minY) / (maxY - minY)) * 100; }
+
+      // Century labels
+      const labelsDiv = document.createElement('div');
+      labelsDiv.className = 'century-labels';
+      const cStart = Math.ceil(minY / 100) * 100;
+      const centuries = [];
+      for (let c = cStart; c <= maxY; c += 100) centuries.push(c);
+      centuries.forEach(c => {
+        const el = document.createElement('div');
+        el.className = 'century-label';
+        el.style.left = pct(c) + '%';
+        el.textContent = c > 0 ? `${c}年` : `${Math.abs(c)}年前`;
+        labelsDiv.appendChild(el);
+      });
+      wrapper.appendChild(labelsDiv);
+
+      // Axis
+      const axis = document.createElement('div');
+      axis.className = 'time-axis';
+      centuries.forEach(c => {
+        const tick = document.createElement('div');
+        tick.className = 'axis-tick major';
+        tick.style.left = pct(c) + '%';
+        axis.appendChild(tick);
+      });
+      for (let y = Math.ceil(minY / 50) * 50; y <= maxY; y += 50) {
+        if (y % 100 !== 0) {
+          const tick = document.createElement('div');
+          tick.className = 'axis-tick';
+          tick.style.left = pct(y) + '%';
+          axis.appendChild(tick);
+        }
+      }
+      wrapper.appendChild(axis);
+
+      // Author rows
+      const rowsContainer = document.createElement('div');
+      rowsContainer.className = 'author-rows';
+
+      list.forEach(author => {
+        const row = document.createElement('div');
+        row.className = 'author-row';
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'author-name';
+        nameEl.textContent = author.name;
+        row.appendChild(nameEl);
+
+        const barContainer = document.createElement('div');
+        barContainer.className = 'author-bar-container';
+
+        const color = author.cat ? (catColorMap[author.cat] || UNKNOWN_COLOR) : UNKNOWN_COLOR;
+
+        if (author.birth !== null && author.death !== null) {
+          const bar = document.createElement('div');
+          bar.className = 'author-bar';
+          bar.style.left  = pct(author.birth) + '%';
+          bar.style.width = Math.max(pct(author.death) - pct(author.birth), 0.3) + '%';
+          bar.style.background = `linear-gradient(90deg, ${color}88, ${color})`;
+          bar.style.border = `1px solid ${color}`;
+          barContainer.appendChild(bar);
+        } else if (author.birth !== null) {
+          const dot = document.createElement('div');
+          dot.className = 'era-dot';
+          dot.style.left = pct(author.birth) + '%';
+          dot.style.background = color;
+          barContainer.appendChild(dot);
+        } else if (author.death !== null) {
+          const dot = document.createElement('div');
+          dot.className = 'era-dot';
+          dot.style.left = pct(author.death) + '%';
+          dot.style.background = color;
+          dot.style.opacity = '0.6';
+          barContainer.appendChild(dot);
+        }
+
+        row.appendChild(barContainer);
+
+        row.addEventListener('mouseenter', (e) => showTooltip(e, author));
+        row.addEventListener('mousemove',  (e) => moveTooltip(e));
+        row.addEventListener('mouseleave', hideTooltip);
+        row.addEventListener('click', () => { if (author.url) window.open(author.url, '_blank'); });
+        row.addEventListener('touchstart', (e) => {
+          showTooltip(e.touches[0], author);
+          setTimeout(hideTooltip, 3000);
+        }, { passive: true });
+
+        rowsContainer.appendChild(row);
+      });
+
+      wrapper.appendChild(rowsContainer);
+      buildLegend();
+    }
+
+    function buildLegend() {
+      const legend = document.getElementById('legend');
+      legend.innerHTML = '';
+      if (Object.keys(catColorMap).length === 0) {
+        legend.classList.remove('visible');
+        return;
+      }
+      legend.classList.add('visible');
+      const label = document.createElement('span');
+      label.style.cssText = 'font-size:0.65rem;color:var(--text-dim)';
+      label.textContent = 'ジャンル:';
+      legend.appendChild(label);
+      for (const [cat, color] of Object.entries(catColorMap)) {
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        item.innerHTML = `<div class="legend-color" style="background:${color}"></div>${cat}`;
+        legend.appendChild(item);
+      }
+    }
+
+    function showTooltip(e, author) {
+      const tt = document.getElementById('tooltip');
+      document.getElementById('tt-name').textContent = author.name;
+      const yStr = [
+        author.birth !== null ? `${author.birth}年生` : null,
+        author.death !== null ? `${author.death}年没` : null,
+      ].filter(Boolean).join(' — ');
+      document.getElementById('tt-years').textContent = yStr || '年代不明';
+      let meta = '';
+      if (author.birth !== null && author.death !== null) {
+        meta += `<strong>享年</strong> ${author.death - author.birth}歳<br>`;
+      }
+      if (author.cat) meta += `<strong>ジャンル</strong> ${author.cat}<br>`;
+      meta += `<span style="color:var(--accent)">クリックでNotionを開く</span>`;
+      document.getElementById('tt-meta').innerHTML = meta;
+      tt.classList.add('visible');
+      moveTooltip(e);
+    }
+
+    function moveTooltip(e) {
+      const tt = document.getElementById('tooltip');
+      const tw = tt.offsetWidth, th = tt.offsetHeight;
+      const vw = window.innerWidth, vh = window.innerHeight;
+      tt.style.left = (e.clientX + tw + 16 > vw ? e.clientX - tw - 8 : e.clientX + 16) + 'px';
+      tt.style.top  = (e.clientY + th + 16 > vh ? e.clientY - th - 8 : e.clientY + 16) + 'px';
+    }
+
+    function hideTooltip() {
+      document.getElementById('tooltip').classList.remove('visible');
+    }
+
+    async function init() {
+      showStatus('<span class="spinner"></span> Notionからデータを取得中...');
+      try {
+        const cfg = await fetch('/api/config').then(r => r.json());
+        propName  = cfg.propName;
+        propBirth = cfg.propBirth;
+        propDeath = cfg.propDeath;
+        propCat   = cfg.propCategory;
+
+        const pages = await fetchAllPages();
+        authors = parsePages(pages, propName, propBirth, propDeath, propCat);
+
+        if (authors.length === 0) {
+          showStatus('<span class="error-msg">データが見つかりませんでした。.env のプロパティ名を確認してください。</span>');
+          return;
+        }
+
+        buildCatColors();
+        hideStatus();
+        document.getElementById('controls').classList.add('visible');
+        document.getElementById('timeline-container').classList.add('visible');
+
+        setupControls();
+        render();
+      } catch (e) {
+        showStatus(`<span class="error-msg">エラー: ${e.message}</span>`);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
